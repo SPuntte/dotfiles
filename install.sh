@@ -30,8 +30,7 @@ require() {
 
 # Try to find a package manager
 detect_package_manager() {
-	install_cmd_prefix=""
-	install_cmd_suffix=""
+	install_cmd=""
 	sudo_cmd=""
 	# Try to check if user has sudo rights
 	if cmd_exists sudo; then
@@ -47,16 +46,15 @@ detect_package_manager() {
 	if cmd_exists aptdcon; then
 		printf "aptdcon found\n"
 		aptdcon -c
-		install_cmd_prefix="aptdcon --install=\'"
-		isntall_cmd_suffix="\'"
+		install_cmd="aptdcon -i "
 	elif cmd_exists apt; then
 		printf "apt found\n"
 		$sudo_cmd apt update
-		install_cmd_prefix="$sudo_cmd apt -y install "
+		install_cmd="$sudo_cmd apt -y install "
 	elif cmd_exists pacman; then
 		printf "pacman found\n"
 		$sudo_cmd pacman -Sy
-		install_cmd_prefix="$sudo_cmd pacman --needed --noconfirm -S "
+		install_cmd="$sudo_cmd pacman --needed --noconfirm -S "
 	else
 		printf "What distro is this?! [tips fedora]\n"
 		exit 3
@@ -64,7 +62,8 @@ detect_package_manager() {
 }
 
 install() {
-	$install_cmd_prefix$@$install_cmd_suffix
+	local cmd="$install_cmd$@"
+	$cmd
 }
 
 try_install() {
@@ -72,12 +71,19 @@ try_install() {
 		detect_package_manager
 		pm_detected=1
 	fi
-	install $@
+	# Workaround for aptdcon quotes
+	if echo install_cmd | grep aptdcon &> /dev/null; then
+		for pkg in $@; do
+			install $pkg
+		done
+	else
+		install $@
+	fi
 }
 
 # Check that chsh can change login shell to given shell
 is_shell_available() {
-	grep "\b$1\b" /etc/shells &>/dev/null
+	grep /$1$ /etc/shells &>/dev/null
 }
 
 backup_existing_dotfiles() {
@@ -105,7 +111,11 @@ change_to_zsh() {
 		if ! is_shell_available zsh; then
 			try_install zsh
 		fi
-		chsh -s $(which zsh)
+		if ! chsh -s $(grep /zsh$ /etc/shells | tail -1) &>/dev/null; then
+			if ! chsh -s $(grep /zsh$ /etc/shells | head -1) &>/dev/null; then
+				panic "Failed to change login shell."
+			fi
+		fi
 	fi
 	printf "\tOK\n\n"
 }
@@ -175,31 +185,35 @@ install_oh_my_zsh() {
 	printf "\tInstall zsh-autosuggestions\n"
 	repo=https://github.com/zsh-users/zsh-autosuggestions.git
 	plugin=$ZSH_CUSTOM_DIR/plugins/zsh-autosuggestions
-	rm -rf $plugin
-	git clone -q $repo $plugin
+	if [ ! -d $plugin ]; then
+		git clone -q $repo $plugin
+	fi
 
 	# Install zsh-completions
 	printf "\tInstall zsh-completions\n"
 	repo=https://github.com/zsh-users/zsh-completions.git
 	plugin=$ZSH_CUSTOM_DIR/plugins/zsh-completions
-	rm -rf $plugin
-	git clone -q $repo $plugin
+	if [ ! -d $plugin ]; then
+		git clone -q $repo $plugin
+	fi
 
 	# Install zsh-syntax-highlighting
 	printf "\tInstall zsh-syntax-highlighting\n"
 	repo=https://github.com/zsh-users/zsh-syntax-highlighting.git
 	plugin=$ZSH_CUSTOM_DIR/plugins/zsh-syntax-highlighting
-	rm -rf $plugin
-	git clone -q $repo $plugin
+	if [ ! -d $plugin ]; then
+		git clone -q $repo $plugin
+	fi
+
 	printf "\tOK\n\n"
 }
 
 create_symlinks() {
 	printf "Create symlinks...\n"
 	if [ "$TARGET" = "desktop" ]; then
-		stow -v -t $INSTALL_DIR -R alacritty
+		stow -v -t $INSTALL_DIR alacritty
 	fi
-	stow -v -t $INSTALL_DIR -R git tmux vim zsh
+	stow -v -t $INSTALL_DIR git tmux zsh
 	printf "\tOK\n\n"
 }
 
@@ -222,8 +236,8 @@ main() {
 	fi
 	if ! cmd_exists stow; then
 		printf "Install GNU stow...\n"
-		if !try_install stow; then
-			panix "GNU stow is required and installing it failed."
+		if ! try_install stow; then
+			panic "GNU stow is required and installing it failed."
 		fi
 		printf "\tOK\n\n"
 	fi
