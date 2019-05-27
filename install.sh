@@ -176,6 +176,10 @@ install_alacritty() {
 		curl -fsSL $ALACRITTY_SRC -o tmp-alacritty.tar.gz
 		tar -xzf tmp-alacritty.tar.gz -C $LOCAL_BIN_DIR
 		rm tmp-alacritty.tar.gz
+		if ! is_package_installed xclip; then
+			printf "\tInstall dependency: xclip\n"
+			do_install xclip
+		fi
 	fi
 	printf "\tOK\n\n"
 }
