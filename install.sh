@@ -99,7 +99,6 @@ backup_existing_dotfiles() {
 			printf "\t$dotfile\n"
 			mkdir -p $(dirname $backupfile)
 			cp $testfile $backupfile
-			rm -f $testfile
 		fi
 	done 9< <( find ./*/ -type f -exec printf '%s\0' {} + )
 	printf "\tOK\n\n"
@@ -211,9 +210,9 @@ install_oh_my_zsh() {
 create_symlinks() {
 	printf "Create symlinks...\n"
 	if [ "$TARGET" = "desktop" ]; then
-		stow -v -t $INSTALL_DIR alacritty Xmodmap
+		stow -v -t $INSTALL_DIR -R alacritty Xmodmap
 	fi
-	stow -v -t $INSTALL_DIR git tmux zsh
+	stow -v -t $INSTALL_DIR -R git tmux zsh
 	printf "\tOK\n\n"
 }
 
