@@ -7,6 +7,7 @@ BACKUP_DIR=$HOME/dotbackup/$(date +%F_%H%M%S)
 
 ALACRITTY_SRC=https://github.com/jwilm/alacritty/releases/download/v0.3.2/Alacritty-v0.3.2-ubuntu_18_04-$(uname -m).tar.gz
 OH_MY_ZSH_INSTALL_SRC=https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh
+PYENV_INSTALL_SRC=https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer
 
 panic() {
 	printf "ERROR: $*\n"
@@ -30,6 +31,9 @@ require() {
 
 # Try to find a package manager
 detect_package_manager() {
+	if [ ${pm_detected:=0} -ne 0 ]; then
+		return 0
+	fi
 	printf "\tDetecting package manager...\n"
 	install_cmd=""
 	query_cmd=""
@@ -64,33 +68,37 @@ detect_package_manager() {
 		printf "\t\tWhat distro is this?! *tips fedora*\n"
 		exit 3
 	fi
+	pm_detected=1
 }
 
 do_install() {
 	$install_cmd $@
 }
 
+is_package_installed() {
+	detect_package_manager
+	$query_cmd $1 &>/dev/null
+}
+
 install_packages() {
-	if [ ${pm_detected:=0} -eq 0 ]; then
-		detect_package_manager
-		pm_detected=1
+	detect_package_manager
+	local missing=""
+	for pkg in $@; do
+		if ! is_package_installed $pkg; then
+			missing="$missing $pkg"
+		fi
+	done
+	if [ -z "$missing" ]; then
+		return 0
 	fi
 	# Workaround for aptdcon quotes
-	if echo install_cmd | grep aptdcon &> /dev/null; then
-		for pkg in $@; do
+	if echo "$install_cmd" | grep aptdcon &> /dev/null; then
+		for pkg in $missing; do
 			do_install $pkg
 		done
 	else
-		do_install $@
+		do_install $missing
 	fi
-}
-
-is_package_installed() {
-	if [ ${pm_detected:=0} -eq 0 ]; then
-		detect_package_manager
-		pm_detected=1
-	fi
-	$query_cmd $1 &>/dev/null
 }
 
 # Check that chsh can change login shell to given shell
@@ -119,10 +127,11 @@ backup_existing_dotfiles() {
 change_to_zsh() {
 	printf "Change login shell to zsh...\n"
 	if [ $SHELL != $(which zsh) ]; then
-		if ! is_shell_available zsh; then
-			install_packages zsh
-		fi
+		install_packages zsh
 		if ! chsh -s $(grep /zsh$ /etc/shells | tail -1) &>/dev/null; then
+			# Anecdotal evidence: some systems list both
+			# /bin/zsh and /usr/bin/zsh in /etc/shells but
+			# only allow 'chsh - s' to the former.
 			if ! chsh -s $(grep /zsh$ /etc/shells | head -1) &>/dev/null; then
 				panic "Failed to change login shell."
 			fi
@@ -176,10 +185,7 @@ install_alacritty() {
 		curl -fsSL $ALACRITTY_SRC -o tmp-alacritty.tar.gz
 		tar -xzf tmp-alacritty.tar.gz -C $LOCAL_BIN_DIR
 		rm tmp-alacritty.tar.gz
-		if ! is_package_installed xclip; then
-			printf "\tInstall dependency: xclip\n"
-			do_install xclip
-		fi
+		install_packages xclip
 	fi
 	printf "\tOK\n\n"
 }
@@ -226,13 +232,32 @@ install_oh_my_zsh() {
 	printf "\tOK\n\n"
 }
 
-install_packages_if_missing() {
-	printf "Install miscellaneous repo packages...\n"
-	for pkg in $@; do
-		if ! is_package_installed $pkg; then
-			do_install $pkg
+install_python_et_al() {
+	printf "Install Python3 and friends...\n"
+	detect_package_manager
+	if echo "$install_cmd" | grep apt &>/dev/null; then
+		# Python 3 packages are called 'python3-*' in
+		# Debian-based distros
+		install_packages python3-pip python3-venv
+		if ! pip3 freeze -l | grep pipenv &>/dev/null; then
+			pip3 install --user pipenv
 		fi
-	done
+		if [ ! -d $INSTALL_DIR/.pyenv ]; then
+			curl -fsSL $PYENV_INSTALL_SRC | bash
+			install_packages make build-essential libssl-dev \
+				zlib1g-dev libbz2-dev libreadline-dev \
+				libsqlite3-dev wget curl llvm libncurses5-dev \
+				xz-utils tk-dev libxml2-dev libxmlsec1-dev \
+				libffi-dev liblzma-dev libsqlite3-dev
+		fi
+	elif echo "$install_cmd" | grep pacman &>/dev/null; then
+		# Arch default Python is Python 3 and pipenv is in repo
+		install_packages python-pipenv pyenv \
+			base-devel openssl zlib sqlite
+	else
+		printf "\t\tWhat distro is this?! *tips fedora*\n"
+		exit 3
+	fi
 	printf "\tOK\n\n"
 }
 
@@ -279,7 +304,8 @@ main() {
 		install_alacritty
 	fi
 	install_oh_my_zsh
-	install_packages_if_missing source-highlight
+	install_packages source-highlight
+	install_python_et_al
 	create_symlinks
 }
 
