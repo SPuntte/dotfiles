@@ -211,7 +211,7 @@ install_oh_my_zsh() {
 create_symlinks() {
 	printf "Create symlinks...\n"
 	if [ "$TARGET" = "desktop" ]; then
-		stow -v -t $INSTALL_DIR alacritty
+		stow -v -t $INSTALL_DIR alacritty Xmodmap
 	fi
 	stow -v -t $INSTALL_DIR git tmux zsh
 	printf "\tOK\n\n"
