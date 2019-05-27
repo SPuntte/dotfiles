@@ -80,7 +80,11 @@ export PATH="$PYENV_ROOT/bin:$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 export LD_LIBRARY_PATH=$HOME/.local/lib:$LD_LIBRARY_PATH
 #export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/src"
 
-export LESSOPEN="| /usr/bin/src-hilite-lesspipe.sh %s"
+if uname -v | grep -i Ubuntu &>/dev/null; then
+	export LESSOPEN="| /usr/share/source-highlight/src-hilite-lesspipe.sh %s"
+elif uname -v | grep -i Arch &>/dev/null; then
+	export LESSOPEN="| /usr/bin/src-hilite-lesspipe.sh %s"
+fi
 export LESS=-' -R '
 
 export SUDO_EDITOR=rvim

@@ -30,43 +30,47 @@ require() {
 
 # Try to find a package manager
 detect_package_manager() {
+	printf "\tDetecting package manager...\n"
 	install_cmd=""
+	query_cmd=""
 	sudo_cmd=""
 	# Try to check if user has sudo rights
 	if cmd_exists sudo; then
 		if ! (sudo -vn && sudo -ln) 2>&1 | grep -v 'may not' \
 			>/dev/null; then
-			printf "Missing sudo rights\n"
+			printf "\t\tMissing sudo rights\n"
 		else
 			sudo_cmd="sudo"
 		fi
 	else
-		printf "sudo not found in \$PATH"
+		printf "\t\tSudo not found in \$PATH"
 	fi
 	if cmd_exists aptdcon; then
-		printf "aptdcon found\n"
+		printf "\t\tFound: aptdcon\n"
 		aptdcon -c
-		install_cmd="aptdcon -i "
+		install_cmd="aptdcon -i"
+		query_cmd="dpkg -l"
 	elif cmd_exists apt; then
-		printf "apt found\n"
+		printf "\t\tFound: apt\n"
 		$sudo_cmd apt update
-		install_cmd="$sudo_cmd apt -y install "
+		install_cmd="$sudo_cmd apt -y install"
+		query_cmd="dpkg -l"
 	elif cmd_exists pacman; then
-		printf "pacman found\n"
+		printf "\t\tFound: pacman\n"
 		$sudo_cmd pacman -Sy
-		install_cmd="$sudo_cmd pacman --needed --noconfirm -S "
+		install_cmd="$sudo_cmd pacman --needed --noconfirm -S"
+		query_cmd="pacman -Qi"
 	else
-		printf "What distro is this?! [tips fedora]\n"
+		printf "\t\tWhat distro is this?! *tips fedora*\n"
 		exit 3
 	fi
 }
 
-install() {
-	local cmd="$install_cmd$@"
-	$cmd
+do_install() {
+	$install_cmd $@
 }
 
-try_install() {
+install_packages() {
 	if [ ${pm_detected:=0} -eq 0 ]; then
 		detect_package_manager
 		pm_detected=1
@@ -74,11 +78,19 @@ try_install() {
 	# Workaround for aptdcon quotes
 	if echo install_cmd | grep aptdcon &> /dev/null; then
 		for pkg in $@; do
-			install $pkg
+			do_install $pkg
 		done
 	else
-		install $@
+		do_install $@
 	fi
+}
+
+is_package_installed() {
+	if [ ${pm_detected:=0} -eq 0 ]; then
+		detect_package_manager
+		pm_detected=1
+	fi
+	$query_cmd $1 &>/dev/null
 }
 
 # Check that chsh can change login shell to given shell
@@ -108,7 +120,7 @@ change_to_zsh() {
 	printf "Change login shell to zsh...\n"
 	if [ $SHELL != $(which zsh) ]; then
 		if ! is_shell_available zsh; then
-			try_install zsh
+			install_packages zsh
 		fi
 		if ! chsh -s $(grep /zsh$ /etc/shells | tail -1) &>/dev/null; then
 			if ! chsh -s $(grep /zsh$ /etc/shells | head -1) &>/dev/null; then
@@ -158,11 +170,14 @@ install_alacritty() {
 	if cmd_exists alacritty; then
 		return 0
 	fi
-	if ! try_install alacritty alacritty-terminfo; then
+	printf "Install alacritty...\n"
+	if ! install_packages alacritty alacritty-terminfo; then
+		printf "\tPackage not found in repos, install from GitHub..."
 		curl -fsSL $ALACRITTY_SRC -o tmp-alacritty.tar.gz
 		tar -xzf tmp-alacritty.tar.gz -C $LOCAL_BIN_DIR
 		rm tmp-alacritty.tar.gz
 	fi
+	printf "\tOK\n\n"
 }
 
 install_oh_my_zsh() {
@@ -207,6 +222,16 @@ install_oh_my_zsh() {
 	printf "\tOK\n\n"
 }
 
+install_packages_if_missing() {
+	printf "Install miscellaneous repo packages...\n"
+	for pkg in $@; do
+		if ! is_package_installed $pkg; then
+			do_install $pkg
+		fi
+	done
+	printf "\tOK\n\n"
+}
+
 create_symlinks() {
 	printf "Create symlinks...\n"
 	if [ "$TARGET" = "desktop" ]; then
@@ -228,14 +253,14 @@ main() {
 	require chsh grep which
 	if ! cmd_exists git; then
 		printf "Install Git...\n"
-		if ! try_install git; then
+		if ! install_packages git; then
 			panic "Git is required and installing it failed."
 		fi
 		printf "\tOK\n\n"
 	fi
 	if ! cmd_exists stow; then
 		printf "Install GNU stow...\n"
-		if ! try_install stow; then
+		if ! install_packages stow; then
 			panic "GNU stow is required and installing it failed."
 		fi
 		printf "\tOK\n\n"
@@ -250,6 +275,7 @@ main() {
 		install_alacritty
 	fi
 	install_oh_my_zsh
+	install_packages_if_missing source-highlight
 	create_symlinks
 }
 
