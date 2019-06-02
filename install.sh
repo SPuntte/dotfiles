@@ -1,6 +1,7 @@
+#!/usr/bin/env bash
+
 set -u
 
-TARGET=${1:-"headless"}
 INSTALL_DIR=$HOME
 LOCAL_BIN_DIR=$HOME/.local/bin
 BACKUP_DIR=$HOME/dotbackup/$(date +%F_%H%M%S)
@@ -9,22 +10,17 @@ ALACRITTY_SRC=https://github.com/jwilm/alacritty/releases/download/v0.3.2/Alacri
 OH_MY_ZSH_INSTALL_SRC=https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh
 PYENV_INSTALL_SRC=https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer
 
-panic() {
-	printf "ERROR: $*\n"
-	exit 255
-}
+panic() { printf "ERROR: $*\n"; exit 255; }
 
 # Test if given program/command exists
-cmd_exists() {
-	command -v $1 &>/dev/null
-}
+cmd_exists() { command -v $1 &>/dev/null; }
 
 # Check that given commands exist
 require() {
 	for cmd in $@; do
 		if ! cmd_exists $cmd; then
 			printf "Missing command: $cmd\n"
-			exit 2
+			exit 4
 		fi
 	done
 }
@@ -263,23 +259,39 @@ install_python_et_al() {
 
 create_symlinks() {
 	printf "Create symlinks...\n"
-	if [ "$TARGET" = "desktop" ]; then
+	if contains "$TARGETS" "desktop"; then
 		stow -v -t $INSTALL_DIR -R alacritty Xmodmap
 	fi
 	stow -v -t $INSTALL_DIR -R git tmux zsh
 	printf "\tOK\n\n"
 }
 
+usage() {
+	cat <<-EOF
+	Usage: $(basename "$0") TARGET ...
+
+	Valid TARGETs are
+
+	base       Command-line stuff: tmux, zsh, etc.
+	desktop    Desktop stuff: Alacritty, Xmodmap; implies 'base'
+	python     Python development environment: Python 3, pipenv, pyenv, etc.; implies 'base'
+EOF
+}
+
+is_valid_target() { echo "base desktop python" | grep -F -q -w "$1"; }
+
+contains() { echo "$1" | grep -F -q -w "$2"; }
+
 main() {
-	if [ "$TARGET" = "headless" ]; then :
-	elif [ "$TARGET" = "desktop" ]; then :
-	else
-		printf "Unknown target: $TARGET\n"
-		exit 1
-	fi
-	printf "Install target: $TARGET\n\n"
+	for target in "$TARGETS"; do
+		if ! is_valid_target $target; then
+			printf "Unknown target: $target\n"
+			exit 2
+		fi
+	done
+	printf "Install target(s): $TARGETS\n\n"
 	
-	require chsh grep which
+	require chsh which
 	if ! cmd_exists git; then
 		printf "Install Git...\n"
 		if ! install_packages git; then
@@ -299,14 +311,25 @@ main() {
 	backup_existing_dotfiles
 	change_to_zsh
 	configure_git
-	if [ "$TARGET" = "desktop" ]; then
+	if contains "$TARGETS" "desktop"; then
 		install_powerline_fonts
 		install_alacritty
 	fi
 	install_oh_my_zsh
 	install_packages source-highlight
-	install_python_et_al
+	if contains "$TARGETS" "python"; then
+		install_python_et_al
+	fi
 	create_symlinks
 }
 
-main
+if [ $# -eq 0 ]; then
+	usage >&2
+	exit 1
+elif [ $# -eq 1 -a $1 = "-h" ]; then
+	usage
+	exit 0
+else
+	TARGETS="$@"
+	main "$@"
+fi
