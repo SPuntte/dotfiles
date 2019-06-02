@@ -191,6 +191,8 @@ install_oh_my_zsh() {
 	# Modify .oh-my-zsh install script to not start zsh on completion
 	curl -fsSL $OH_MY_ZSH_INSTALL_SRC | sed -e '/[[:blank:]]*env zsh -l/d' \
 		> install_oh-my-zsh.sh
+	sh install_oh-my-zsh.sh
+	rm -f $INSTALL_DIR/.zshrc
 	rm install_oh-my-zsh.sh
 
 	printf "\t.oh-my-zsh DEFAULT_USER: "
