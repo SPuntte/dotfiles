@@ -189,9 +189,8 @@ install_alacritty() {
 install_oh_my_zsh() {
 	printf "Install .oh-my-zsh...\n"
 	# Modify .oh-my-zsh install script to not start zsh on completion
-	curl -fsSL $OH_MY_ZSH_INSTALL_SRC | sed -e '/[[:blank:]]*env zsh -l/d' \
-		> install_oh-my-zsh.sh
-	sh install_oh-my-zsh.sh
+	curl -fsSL $OH_MY_ZSH_INSTALL_SRC -o install_oh-my-zsh.sh
+	sh install_oh-my-zsh.sh --unattended
 	rm -f $INSTALL_DIR/.zshrc
 	rm install_oh-my-zsh.sh
 
