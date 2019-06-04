@@ -237,7 +237,10 @@ install_python_et_al() {
 		# Debian-based distros
 		install_packages python3-pip python3-venv
 		if ! pip3 freeze -l | grep pipenv &>/dev/null; then
-			pip3 install --user pipenv
+			pip3 install --user --upgrade pipenv
+		fi
+		if ! pip3 freeze -l | grep autopep8 &>/dev/null; then
+			pip3 install --user --upgrade autopep8
 		fi
 		if [ ! -d $INSTALL_DIR/.pyenv ]; then
 			curl -fsSL $PYENV_INSTALL_SRC | bash
@@ -249,7 +252,7 @@ install_python_et_al() {
 		fi
 	elif echo "$install_cmd" | grep pacman &>/dev/null; then
 		# Arch default Python is Python 3 and pipenv is in repo
-		install_packages python-pipenv pyenv \
+		install_packages python-pipenv pyenv autopep8 \
 			base-devel openssl zlib sqlite
 	else
 		printf "\t\tWhat distro is this?! *tips fedora*\n"
