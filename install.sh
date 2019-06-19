@@ -266,7 +266,7 @@ create_symlinks() {
 	if contains "$TARGETS" "desktop"; then
 		stow -v -t $INSTALL_DIR -R alacritty Xmodmap
 	fi
-	stow -v -t $INSTALL_DIR -R git tmux zsh
+	stow -v -t $INSTALL_DIR -R git tmux vim zsh
 	printf "\tOK\n\n"
 }
 
@@ -276,7 +276,7 @@ usage() {
 
 	Valid TARGETs are
 
-	base       Command-line stuff: tmux, zsh, etc.
+	base       Command-line stuff: tmux, vim, zsh, etc.
 	desktop    Desktop stuff: Alacritty, Xmodmap; implies 'base'
 	python     Python development environment: Python 3, pipenv, pyenv, etc.; implies 'base'
 EOF
