@@ -120,22 +120,6 @@ backup_existing_dotfiles() {
 	printf "\tOK\n\n"
 }
 
-change_to_zsh() {
-	printf "Change login shell to zsh...\n"
-	if ! cmd_exists zsh; then
-		install_packages zsh
-	fi
-	if ! chsh -s $(grep /zsh$ /etc/shells | tail -1) &>/dev/null; then
-		# Anecdotal evidence: some systems list both
-		# /bin/zsh and /usr/bin/zsh in /etc/shells but
-		# only allow 'chsh - s' to the former.
-		if ! chsh -s $(grep /zsh$ /etc/shells | head -1) &>/dev/null; then
-			panic "Failed to change login shell."
-		fi
-	fi
-	printf "\tOK\n\n"
-}
-
 configure_git() {
 	printf "Configure Git...\n"
 	if ! git config -f $INSTALL_DIR/.gitconfig_local_machine \
@@ -310,10 +294,16 @@ main() {
 		fi
 		printf "\tOK\n\n"
 	fi
+	if ! cmd_exists zsh; then
+		printf "Install zsh...\n"
+		if ! install_packages zsh; then
+			panic "zsh is required and installing it failed."
+		fi
+		printf "\tOK\n\n"
+	fi
 
 	# TODO: control by variable
 	backup_existing_dotfiles
-	change_to_zsh
 	configure_git
 	if contains "$TARGETS" "desktop"; then
 		install_powerline_fonts
@@ -325,6 +315,7 @@ main() {
 		install_python_et_al
 	fi
 	create_symlinks
+	printf "Installation complete. You may need to change your shell to zsh manually.\n"
 }
 
 if [ $# -eq 0 ]; then
