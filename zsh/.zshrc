@@ -91,4 +91,6 @@ export SUDO_EDITOR=rvim
 export EDITOR=vim
 
 # pyenv
-eval "$(pyenv init -)"
+if command -v pyenv &>/dev/null; then
+	eval "$(pyenv init -)"
+fi
