@@ -122,15 +122,15 @@ backup_existing_dotfiles() {
 
 change_to_zsh() {
 	printf "Change login shell to zsh...\n"
-	if [ $SHELL != $(which zsh) ]; then
+	if ! cmd_exists zsh; then
 		install_packages zsh
-		if ! chsh -s $(grep /zsh$ /etc/shells | tail -1) &>/dev/null; then
-			# Anecdotal evidence: some systems list both
-			# /bin/zsh and /usr/bin/zsh in /etc/shells but
-			# only allow 'chsh - s' to the former.
-			if ! chsh -s $(grep /zsh$ /etc/shells | head -1) &>/dev/null; then
-				panic "Failed to change login shell."
-			fi
+	fi
+	if ! chsh -s $(grep /zsh$ /etc/shells | tail -1) &>/dev/null; then
+		# Anecdotal evidence: some systems list both
+		# /bin/zsh and /usr/bin/zsh in /etc/shells but
+		# only allow 'chsh - s' to the former.
+		if ! chsh -s $(grep /zsh$ /etc/shells | head -1) &>/dev/null; then
+			panic "Failed to change login shell."
 		fi
 	fi
 	printf "\tOK\n\n"
@@ -295,7 +295,7 @@ main() {
 	done
 	printf "Install target(s): $TARGETS\n\n"
 	
-	require chsh which
+	require chsh
 	if ! cmd_exists git; then
 		printf "Install Git...\n"
 		if ! install_packages git; then
