@@ -6,7 +6,7 @@ INSTALL_DIR=$HOME
 LOCAL_BIN_DIR=$HOME/.local/bin
 BACKUP_DIR=$HOME/dotbackup/$(date +%F_%H%M%S)
 
-ALACRITTY_SRC=https://github.com/jwilm/alacritty/releases/download/v0.3.2/Alacritty-v0.3.2-ubuntu_18_04-$(uname -m).tar.gz
+ALACRITTY_SRC=https://github.com/jwilm/alacritty/releases/download/v0.3.3/Alacritty-v0.3.3-ubuntu_18_04_amd64.tar.gz
 OH_MY_ZSH_INSTALL_SRC=https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh
 PYENV_INSTALL_SRC=https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer
 
