@@ -9,6 +9,7 @@ BACKUP_DIR=$HOME/dotbackup/$(date +%F_%H%M%S)
 ALACRITTY_SRC=https://github.com/jwilm/alacritty/releases/download/v0.3.3/Alacritty-v0.3.3-ubuntu_18_04_amd64.tar.gz
 OH_MY_ZSH_INSTALL_SRC=https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh
 PYENV_INSTALL_SRC=https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer
+NVM_INSTALL_SRC=https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh
 
 panic() { printf "ERROR: $*\n"; exit 255; }
 
@@ -245,6 +246,13 @@ install_python_et_al() {
 	printf "\tOK\n\n"
 }
 
+install_nvm() {
+	printf "Install nvm...\n"
+	unset NVM_DIR
+	curl -fsSl $NVM_INSTALL_SRC | bash
+	printf "\tOK\n\n"
+}
+
 create_symlinks() {
 	printf "Create symlinks...\n"
 	if contains "$TARGETS" "desktop"; then
@@ -263,10 +271,11 @@ usage() {
 	base       Command-line stuff: tmux, vim, zsh, etc.
 	desktop    Desktop stuff: Alacritty, Xmodmap; implies 'base'
 	python     Python development environment: Python 3, pipenv, pyenv, etc.; implies 'base'
+	nvm        Node.js version manager; implies 'base'
 EOF
 }
 
-is_valid_target() { echo "base desktop python" | grep -F -q -w "$1"; }
+is_valid_target() { echo "base desktop python nvm" | grep -F -q -w "$1"; }
 
 contains() { echo "$1" | grep -F -q -w "$2"; }
 
@@ -302,8 +311,9 @@ main() {
 		printf "\tOK\n\n"
 	fi
 
-	# TODO: control by variable
-	backup_existing_dotfiles
+	if [ -n "${BACKUP_DOTFILES:-}" ]; then
+		backup_existing_dotfiles
+	fi
 	configure_git
 	if contains "$TARGETS" "desktop"; then
 		install_powerline_fonts
@@ -313,6 +323,9 @@ main() {
 	install_packages source-highlight
 	if contains "$TARGETS" "python"; then
 		install_python_et_al
+	fi
+	if contains "$TARGETS" "nvm"; then
+		install_nvm
 	fi
 	create_symlinks
 	printf "Installation complete. You may need to change your shell to zsh manually.\n"
