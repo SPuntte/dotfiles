@@ -4,3 +4,6 @@
 [submodule "vim/.vim/pack/nerdtree/start/nerdtree"]
 	path = vim/.vim/pack/nerdtree/start/nerdtree
 	url = https://github.com/scrooloose/nerdtree.git
+[submodule "vim/.vim/pack/vim-solarized8/opt/vim-solarized8"]
+	path = vim/.vim/pack/vim-solarized8/opt/vim-solarized8
+	url = https://github.com/lifepillar/vim-solarized8.git

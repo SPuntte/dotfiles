@@ -56,6 +56,15 @@ if &t_Co > 2 || has("gui_running")
   nnoremap <CR> :nohlsearch<CR><CR>
 endif
 
+" Enable 24-bit color if supported by the environment
+if $COLORTERM == "truecolor" || $COLORTERM == "24bit"
+  set termguicolors
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+  set background=dark
+  colorscheme solarized8
+endif
+
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
 
