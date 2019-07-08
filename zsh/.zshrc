@@ -67,7 +67,7 @@ DEFAULT_USER="pontus"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git pyenv nvm npm zsh-syntax-highlighting zsh-completions zsh-autosuggestions)
+plugins=(git pyenv nvm npm zsh-syntax-highlighting zsh-completions zsh-autosuggestions zmv)
 
 # Reload for zsh-completion
 autoload -U compinit && compinit
