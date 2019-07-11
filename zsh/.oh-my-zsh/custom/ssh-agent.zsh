@@ -7,7 +7,7 @@ function start_agent {
 	echo "Initializing new SSH agent..."
 	touch $SSH_ENV
 	chmod 600 "${SSH_ENV}"
-	/usr/bin/ssh-agent | sed 's/^echo/#echo/' >> "${SSH_ENV}"
+	/usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
 	. "${SSH_ENV}" > /dev/null
 	/usr/bin/ssh-add
 }
