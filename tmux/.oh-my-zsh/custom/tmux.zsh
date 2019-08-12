@@ -1,7 +1,9 @@
+DEFAULT_TMUX_SESSION=$HOST
+
 tmn_attach() {
-	tmux has-session -t $HOST &> /dev/null && tmux a -t $HOST || tmux new -s $HOST
+	tmux has-session -t $DEFAULT_TMUX_SESSION &> /dev/null && tmux a -t $DEFAULT_TMUX_SESSION || tmux new -s $DEFAULT_TMUX_SESSION
 }
 
 tmn() {
-	tmux detach -E "tmux has-session -t $HOST &> /dev/null && tmux a -t $HOST || tmux new -s $HOST" &> /dev/null || tmn_attach
+	tmux detach -E "tmux has-session -t $DEFAULT_TMUX_SESSION &> /dev/null && tmux a -t $DEFAULT_TMUX_SESSION || tmux new -s $DEFAULT_TMUX_SESSION" &> /dev/null || tmn_attach
 }
