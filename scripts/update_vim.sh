@@ -10,6 +10,7 @@ for version in $(pyenv global); do
 done
 RPATH=${RPATH%?}
 
+mkdir -p $(dirname $WORKDIR)
 if [ ! -d $WORKDIR ]; then
 	git clone $VIM_GIT_URL $WORKDIR
 fi
