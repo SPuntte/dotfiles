@@ -7,3 +7,4 @@ setlocal textwidth=80
 
 setlocal smarttab
 setlocal smartindent
+setlocal autoindent
