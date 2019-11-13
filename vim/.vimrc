@@ -119,6 +119,9 @@ set completeopt=menuone,noinsert
 " Line numbering
 set number
 
+" Toggle paste-insert mode
+set pastetoggle=<F2>
+
 " python-mode
 if filereadable(expand("~/.vim/pack/python-mode/start/python-mode/plugin/pymode.vim"))
   let g:pymode = 1
