@@ -9,4 +9,4 @@
 	url = https://github.com/lifepillar/vim-solarized8.git
 [submodule "vim/.vim/pack/plugins/start/rust.vim"]
 	path = vim/.vim/pack/rust.vim/start/rust.vim
-	url = GitHub:rust-lang/rust.vim
+	url = https://github.com/rust-lang/rust.vim
