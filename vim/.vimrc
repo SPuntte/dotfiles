@@ -142,6 +142,9 @@ if filereadable(expand("~/.vim/pack/python-mode/start/python-mode/plugin/pymode.
   let g:pymode_rope_completion_bind = '<C-Space>'
 endif
 
+" Store swap files under $HOME/.cache/vim/swap
+set directory^=$HOME/.cache/vim/swap//
+
 " Add optional packages.
 "
 " The matchit plugin makes the % command work better, but it is not backwards
