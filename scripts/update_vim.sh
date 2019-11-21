@@ -23,7 +23,6 @@ make distclean
 LDFLAGS="-Wl,-rpath=$RPATH" ./configure \
 	--prefix=$HOME/.local \
 	--enable-fail-if-missing \
-	--enable-pythoninterp=dynamic \
 	--enable-python3interp=dynamic \
 	--with-features=huge \
 	&& make -j $(nproc) \
