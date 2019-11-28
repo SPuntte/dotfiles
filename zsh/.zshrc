@@ -88,6 +88,7 @@ fi
 export LESS=-' -R '
 
 export SUDO_EDITOR=rvim
+export SYSTEMD_EDITOR=rvim
 export EDITOR=vim
 
 # use vi keybindings
