@@ -1,6 +1,6 @@
 #!/bin/bash
 
-AUR_CACHE_DIR="$HOME/.cache/pacaur"
+AUR_CACHE_DIR="$HOME/.cache/yay"
 
 trap s_hup HUP
 trap s_int INT
