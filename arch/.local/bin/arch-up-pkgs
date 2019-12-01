@@ -1,0 +1,53 @@
+#!/bin/bash
+
+AUR_CACHE_DIR="$HOME/.cache/pacaur"
+
+trap s_hup HUP
+trap s_int INT
+trap s_quit QUIT
+trap s_term TERM
+
+s_hup() {
+	quit "SIGHUP"
+}
+
+s_int() {
+	quit "SIGINT"
+}
+
+s_quit() {
+	quit "SIGQUIT"
+}
+
+s_term() {
+	quit "SIGTERM"
+}
+
+quit() {
+	printf "\nReceived $1, quitting...\n"
+	exit 1
+}
+
+yay --pacman pacmatic -Syu
+sudo paccache -r
+for subdir in $(ls -d $AUR_CACHE_DIR/*/ 2>/dev/null); do
+	# Remove cache for packages not installed on the system
+	if ! pacman -Qs $(basename $subdir) &>/dev/null; then
+	      echo "removing $subdir"
+	      rm -rf $subdir
+	      continue
+	fi
+	# Prune cache for installed packages
+	paccache -rq --cachedir $subdir
+done
+
+# Clean up non-arch packages in cache
+clutter="zip deb tar.gz tgz tar.bz2 7z"
+findargs=""
+for t in $clutter; do
+	findargs="$findargs -name *.$t -o"
+done
+for file in $(find $AUR_CACHE_DIR -type f $findargs -false); do
+	echo "removing $file"
+	rm $file
+done
