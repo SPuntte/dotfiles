@@ -129,7 +129,7 @@ if filereadable(expand("~/.vim/pack/python-mode/start/python-mode/plugin/pymode.
   let g:pymode_paths = []
   let g:pymode_trim_whitespaces = 1
   let g:pymode_options = 1
-  let g:pymode_options_max_line_length = 79
+  let g:pymode_options_max_line_length = 99
   let g:pymode_options_colorcolumn = 1
   let g:pymode_python = 'python3'
   let g:pymode_indent = 1
