@@ -77,7 +77,8 @@ source $ZSH/oh-my-zsh.sh
 # User configuration
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
-export LD_LIBRARY_PATH=$HOME/.local/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$HOME/.local/lib
+export PKG_CONFIG_PATH=$HOME/.local/pkgconfig
 #export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/src"
 
 if uname -v | grep -i Ubuntu &>/dev/null; then
