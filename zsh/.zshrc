@@ -81,11 +81,13 @@ export LD_LIBRARY_PATH=$HOME/.local/lib
 export PKG_CONFIG_PATH=$HOME/.local/pkgconfig
 #export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/src"
 
-if uname -v | grep -i Ubuntu &>/dev/null; then
+release_id=$(lsb_release -si)
+if [ "$release_id" = "Ubuntu" ]; then
 	export LESSOPEN="| /usr/share/source-highlight/src-hilite-lesspipe.sh %s"
-elif uname -v | grep -i Arch &>/dev/null; then
+elif [ "$release_id" = "Arch" ]; then
 	export LESSOPEN="| /usr/bin/src-hilite-lesspipe.sh %s"
 fi
+unset release_id
 export LESS=-' -R '
 
 export SUDO_EDITOR=rvim
