@@ -1,0 +1,21 @@
+# Backups and old/alternative versions
+*.bak
+*.old
+*.sidebar
+*~
+
+# Virtualenv
+.Python
+pyvenv.cfg
+.venv
+pip-selfcheck.json
+
+# pyenv
+.python-version
+
+# rope
+.ropeproject/
+
+# Python bytecode
+**/__pycache__/
+*.pyc

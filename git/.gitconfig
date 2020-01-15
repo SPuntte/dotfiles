@@ -15,6 +15,6 @@
 [push]
 	default = simple
 [core]
-	excludesfile = ~/.gitignore_local_machine
+	excludesfile = ~/.gitignore_global
 [include]
 	path = ~/.gitconfig_local_machine
