@@ -19,3 +19,6 @@ pip-selfcheck.json
 # Python bytecode
 **/__pycache__/
 *.pyc
+
+# Python packaging
+*.egg-info/
