@@ -87,18 +87,6 @@ scrolling:
   # scrollback is enabled (history > 0).
   multiplier: 3
 
-  # Scroll to the bottom when new text is written to the terminal.
-  auto_scroll: false
-
-# Spaces per Tab (changes require restart)
-#
-# This setting defines the width of a tab in cells.
-#
-# Some applications, like Emacs, rely on knowing about the width of a tab.
-# To prevent unexpected behavior in these applications, it's also required to
-# change the `it` value in terminfo when altering this setting.
-tabspaces: 8
-
 # Font configuration (changes require restart)
 font:
   # Normal (roman) font face
@@ -557,12 +545,6 @@ key_bindings:
   - { key: Down,     mods: Alt,     chars: "\x1b[1;3B"                       }
   - { key: Down,                    chars: "\x1b[B",        mode: ~AppCursor }
   - { key: Down,                    chars: "\x1bOB",        mode: AppCursor  }
-#--- Bug mitigation: https://github.com/alacritty/alacritty/issues/3109
-  - { key: Up,       mods: Control|Alt,                     action: None     }
-  - { key: Down,     mods: Control|Alt,                     action: None     }
-  - { key: Left,     mods: Control|Alt,                     action: None     }
-  - { key: Right,    mods: Control|Alt,                     action: None     }
-#---
   - { key: F1,                      chars: "\x1bOP"                          }
   - { key: F2,                      chars: "\x1bOQ"                          }
   - { key: F3,                      chars: "\x1bOR"                          }
