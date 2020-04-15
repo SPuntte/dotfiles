@@ -143,8 +143,8 @@ if filereadable(expand("~/.vim/pack/python-mode/start/python-mode/plugin/pymode.
 endif
 
 " Add hook for clang-format
-map <C-K> :pyf $HOME/.local/bin/clang-format.py<cr>
-imap <C-K> <c-o>:pyf $HOME/.local/bin/clang-format.py<cr>
+map <C-K> :py3f $HOME/.local/bin/clang-format.py<cr>
+imap <C-K> <c-o>:py3f $HOME/.local/bin/clang-format.py<cr>
 
 " Store swap files under $HOME/.cache/vim/swap
 set directory^=$HOME/.cache/vim/swap//
