@@ -1,10 +1,17 @@
+# POSIXly store all set options
+_oldopts="$(set +o); set -$-"
+set -u
+
 # Keep log-in/out statistics, exculding tmux sessions
-STATS_DIR=$HOME/.loginout
-if [ -z "$TMUX" ]; then
+if [ -z "${TMUX:-}" ]; then
+	STATS_DIR=$HOME/.loginout
 	mkdir -p $STATS_DIR
-	echo "${$(dd if=/dev/urandom bs=64 count=1 status=none | sha256sum -b)%% *}" > $STATS_DIR/.sessid
-	chmod 400 $STATS_DIR/.sessid
-	echo "$(whoami)@$(hostname)" > $STATS_DIR/.sessname
-	chmod 400 $STATS_DIR/.sessname
-	echo "$(date --iso-8601=seconds) $(cat $STATS_DIR/.sessname) $(cat $STATS_DIR/.sessid) login" >> $STATS_DIR/stats
+	export LOGINOUT_STATS_SESSID="${$(dd if=/dev/urandom bs=64 count=1 status=none | sha256sum -b)%% *}"
+	export LOGINOUT_STATS_SESSNAME="$(whoami)@$(hostname)"
+	echo "$(date --iso-8601=seconds) $LOGINOUT_STATS_SESSNAME $LOGINOUT_STATS_SESSID login" >> $STATS_DIR/stats
+	unset STATS_DIR
 fi
+
+# Restore stored options
+set +vx; eval "$_oldopts"
+unset _oldopts
