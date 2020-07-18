@@ -1,6 +1,6 @@
 alias sudo='sudo '
 
-alias rm='rm -i'
+alias rm='rm -vi'
 
 alias l.='ll -d -- .*'
 alias la='ls -a'
