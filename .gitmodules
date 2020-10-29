@@ -1,13 +1,13 @@
-[submodule "vim/.vim/pack/python-mode/start/python-mode"]
+[submodule "python-mode"]
 	path = vim/.vim/pack/python-mode/start/python-mode
 	url = https://github.com/python-mode/python-mode.git
-[submodule "vim/.vim/pack/nerdtree/start/nerdtree"]
+[submodule "nerdtree"]
 	path = vim/.vim/pack/nerdtree/start/nerdtree
 	url = https://github.com/scrooloose/nerdtree.git
-[submodule "vim/.vim/pack/vim-solarized8/opt/vim-solarized8"]
+[submodule "vim-solarized8"]
 	path = vim/.vim/pack/vim-solarized8/opt/vim-solarized8
 	url = https://github.com/lifepillar/vim-solarized8.git
-[submodule "vim/.vim/pack/plugins/start/rust.vim"]
+[submodule "rust.vim"]
 	path = vim/.vim/pack/rust.vim/start/rust.vim
 	url = https://github.com/rust-lang/rust.vim
 [submodule "zsh-autosuggestions"]
