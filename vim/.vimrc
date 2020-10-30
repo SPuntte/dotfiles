@@ -144,7 +144,10 @@ map <C-K> :py3f $HOME/.local/bin/clang-format.py<cr>
 imap <C-K> <c-o>:py3f $HOME/.local/bin/clang-format.py<cr>
 
 " Store swap files under $HOME/.cache/vim/swap
-set directory^=$HOME/.cache/vim/swap//
+if exists("*mkdir")
+  call mkdir($HOME . "/.cache/vim/swap", "p")
+  set directory^=$HOME/.cache/vim/swap//
+endif
 
 " Add optional packages.
 "
