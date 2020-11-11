@@ -185,32 +185,6 @@ install_oh_my_zsh() {
 	replace="/DEFAULT_USER="'"'"$zsh_default_user"'"'"/"
 	sed -i -e $search$replace zsh/.zshrc
 
-	ZSH_CUSTOM_DIR=${ZSH_CUSTOM:-$INSTALL_DIR/.oh-my-zsh/custom}
-
-	# Install zsh-autosuggestions
-	printf "\tInstall zsh-autosuggestions\n"
-	repo=https://github.com/zsh-users/zsh-autosuggestions.git
-	plugin=$ZSH_CUSTOM_DIR/plugins/zsh-autosuggestions
-	if [ ! -d $plugin ]; then
-		git clone -q $repo $plugin
-	fi
-
-	# Install zsh-completions
-	printf "\tInstall zsh-completions\n"
-	repo=https://github.com/zsh-users/zsh-completions.git
-	plugin=$ZSH_CUSTOM_DIR/plugins/zsh-completions
-	if [ ! -d $plugin ]; then
-		git clone -q $repo $plugin
-	fi
-
-	# Install zsh-syntax-highlighting
-	printf "\tInstall zsh-syntax-highlighting\n"
-	repo=https://github.com/zsh-users/zsh-syntax-highlighting.git
-	plugin=$ZSH_CUSTOM_DIR/plugins/zsh-syntax-highlighting
-	if [ ! -d $plugin ]; then
-		git clone -q $repo $plugin
-	fi
-
 	printf "\tOK\n\n"
 }
 
