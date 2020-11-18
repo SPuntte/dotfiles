@@ -3,7 +3,7 @@ set -u
 
 WORKDIR=$HOME/pkg/libevent
 LIBEVENT_GIT_URL=https://github.com/libevent/libevent.git
-LIBEVENT_TAG="release-2.1.11-stable"
+LIBEVENT_TAG="release-2.1.12-stable"
 
 mkdir -p $(dirname $WORKDIR)
 

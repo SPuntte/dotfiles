@@ -3,7 +3,7 @@ set -u
 
 WORKDIR=$HOME/pkg/tmux
 TMUX_GIT_URL=https://github.com/tmux/tmux.git
-TMUX_TAG="3.0a"
+TMUX_TAG="3.1c"
 
 mkdir -p $(dirname $WORKDIR)
 
