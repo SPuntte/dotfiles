@@ -1,5 +1,29 @@
+ensure_in_path() {
+	# Add item to PATH if not present already
+	case ":${PATH}:" in
+	    *:"$1":*)
+		;;
+	    *)
+		export PATH="$1:$PATH"
+		;;
+	esac
+}
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
+
+# Setup PATH et al.
+#   Rust/cargo
+if [ -f "$HOME/.cargo/env" ]; then
+	source $HOME/.cargo/env
+fi
+#   ~/.local "prefix"
+ensure_in_path "$HOME/.local/bin"
+export LD_LIBRARY_PATH=$HOME/.local/lib
+export PKG_CONFIG_PATH=$HOME/.local/pkgconfig
+#   pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+ensure_in_path "$PYENV_ROOT/bin"
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -75,12 +99,9 @@ autoload -U compinit && compinit
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
-export LD_LIBRARY_PATH=$HOME/.local/lib
-export PKG_CONFIG_PATH=$HOME/.local/pkgconfig
 #export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/src"
 
+# Colorize the output of `less` using GNU source-highlight
 release_id=$(lsb_release -si)
 if [ "$release_id" = "Ubuntu" ]; then
 	export LESSOPEN="| /usr/share/source-highlight/src-hilite-lesspipe.sh %s"
