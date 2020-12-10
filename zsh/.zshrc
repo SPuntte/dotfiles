@@ -1,11 +1,14 @@
-ensure_in_path() {
-	# Add item to PATH if not present already
+pathmunge () {
 	case ":${PATH}:" in
-	    *:"$1":*)
-		;;
-	    *)
-		export PATH="$1:$PATH"
-		;;
+		*:"$1":*)
+			;;
+		*)
+			[ ! -d "$1" ] && return
+			if [ "$2" = "after" ] ; then
+				PATH=$PATH:$1
+			else
+				PATH=$1:$PATH
+			fi
 	esac
 }
 
@@ -13,17 +16,20 @@ ensure_in_path() {
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Setup PATH et al.
+
 #   Rust/cargo
-if [ -f "$HOME/.cargo/env" ]; then
-	source $HOME/.cargo/env
-fi
+pathmunge "$HOME/.cargo/bin"
+
 #   ~/.local "prefix"
-ensure_in_path "$HOME/.local/bin"
+pathmunge "$HOME/.local/bin"
 export LD_LIBRARY_PATH=$HOME/.local/lib
 export PKG_CONFIG_PATH=$HOME/.local/pkgconfig
+
 #   pyenv
 export PYENV_ROOT="$HOME/.pyenv"
-ensure_in_path "$PYENV_ROOT/bin"
+pathmunge "$PYENV_ROOT/bin"
+
+export PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
