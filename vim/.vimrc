@@ -145,7 +145,10 @@ imap <C-K> <c-o>:py3f $HOME/.local/bin/clang-format.py<cr>
 
 " Store swap files under $HOME/.cache/vim/swap
 if exists("*mkdir")
-  call mkdir($HOME . "/.cache/vim/swap", "p")
+  " Shell commands not allowed in rvim
+  if !v:progname =~? "rvim"
+    call mkdir($HOME . "/.cache/vim/swap", "p")
+  endif
   set directory^=$HOME/.cache/vim/swap//
 endif
 
