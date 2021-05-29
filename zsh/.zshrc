@@ -1,35 +1,5 @@
-pathmunge () {
-	case ":${PATH}:" in
-		*:"$1":*)
-			;;
-		*)
-			[ ! -d "$1" ] && return
-			if [ "$2" = "after" ] ; then
-				PATH=$PATH:$1
-			else
-				PATH=$1:$PATH
-			fi
-	esac
-}
-
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
-
-# Setup PATH et al.
-
-#   Rust/cargo
-pathmunge "$HOME/.cargo/bin"
-
-#   ~/.local "prefix"
-pathmunge "$HOME/.local/bin"
-export LD_LIBRARY_PATH=$HOME/.local/lib
-export PKG_CONFIG_PATH=$HOME/.local/pkgconfig
-
-#   pyenv
-export PYENV_ROOT="$HOME/.pyenv"
-pathmunge "$PYENV_ROOT/bin"
-
-export PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -116,10 +86,6 @@ elif [ "$release_id" = "Arch" ]; then
 fi
 unset release_id
 export LESS=-' -R '
-
-export SUDO_EDITOR=rvim
-export SYSTEMD_EDITOR=rvim
-export EDITOR=vim
 
 # use vi keybindings
 bindkey -v
