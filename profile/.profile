@@ -1,6 +1,6 @@
 pathmunge () {
 	if ! [ -d "$1" ]; then
-		echo "Excluding nonexistent path \'$1\' from PATH"
+		echo "$SHELL: ~/.profile: Excluding nonexistent path '$1' from PATH"
 		return
 	fi
 	case ":${PATH}:" in
